@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const cors = require("cors");
-require("dotenv").config
+const PgPromise = require("pg-promise");
+const pgp = PgPromise({});
+require("dotenv").config();
 
 router.use(cors());
 
@@ -14,3 +16,5 @@ if (process.env.NODE_ENV == "production") {
 		rejectUnauthorized: false,
 	};
 }
+
+const db = pgp(config);
