@@ -31,10 +31,12 @@ router.post("/register", async (req, res) => {
             status: "success",
         });
     } catch (e) {
-        console.log(e);error
+        console.log(e)
         res.json({
             status: "error",
             error: e.message,
         })
     }
 })
+
+module.exports = router;
