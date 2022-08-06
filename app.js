@@ -5,6 +5,7 @@ require("dotenv").config()
 app.use(express.json());
 
 app.use("/connect", routes);
+
 app.get("/", (req, res)=>{
     res.send("backend deployed!");
 })

@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const PgPromise = require("pg-promise");
 const pgp = PgPromise({});
 require("dotenv").config();
@@ -42,7 +43,7 @@ router.post("/register", async (req, res) => {
 //Login 
 router.post("/login", async (req, res) => {
     const {password, email} = req.body;
-    const user = await db.oneOrNone(`select * from users where email = $1`, [email,]);
+    const user = await db.oneOrNone(`select * from users where email = $1`, [email]);
     
     if (!user) return res.status(400).send("Email does not exist.");
     
