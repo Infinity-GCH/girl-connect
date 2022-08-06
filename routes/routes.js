@@ -9,11 +9,11 @@ const DATABASE_URL = process.env.DB_URL;
 const config = {
 	connectionString: DATABASE_URL,
 };
-// if (process.env.NODE_ENV == "production") {
-// 	config.ssl = {
-// 		rejectUnauthorized: false,
-// 	};
-// }
+if (process.env.NODE_ENV == "production") {
+	config.ssl = {
+		rejectUnauthorized: false,
+	};
+}
 
 const db = pgp(config);
 
