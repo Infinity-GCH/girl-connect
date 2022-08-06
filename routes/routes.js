@@ -59,34 +59,34 @@ router.post("/login", async (req, res) => {
 });
 
 // Create Request
-router.post("/request" , async (req, res) => {
-    try {
-        const { type, description } = req.body;
-        let userRequest = `insert into requests (type, description) values ($1,$2)`;
-        await db.none(userRequest, [type, description]);
-			res.json({
-				status: "success",
-			});
-    } catch (e) {
-        console.log(e);
+router.post("/request", async (req, res) => {
+	try {
+		const { type, description } = req.body;
+		let userRequest = `insert into requests (type, description, status) values ($1,$2,$3)`;
+		await db.none(userRequest, [type, description, "open"]);
+		res.json({
+			status: "success",
+		});
+	} catch (e) {
+		console.log(e);
 		res.json({
 			status: "error",
-			error: e.message
+			error: e.message,
 		});
-    }
+	}
 });
 
 // Feeds
 router.get("/feeds", async (req, res) => {
-    try {
-        const feed = await db.many(`select * from requests where status = open`)
-        res.json({data: feed})
-    } catch (e) {
-        console.log(e);
+	try {
+		const feed = await db.oneOrNone(`select * from requests`);
+		res.json({ data: feed });
+	} catch (e) {
+		console.log(e);
 		res.json({
 			status: "error",
-			error: e.message
-        });
+			error: e.message,
+		});
 	}
 });
 
