@@ -1,22 +1,19 @@
 const router = require("express").Router();
-const cors = require("cors");
 const bcrypt = require("bcrypt");
 const PgPromise = require("pg-promise");
 const pgp = PgPromise({});
 require("dotenv").config();
-
-router.use(cors());
 
 // Db Connect
 const DATABASE_URL = process.env.DB_URL;
 const config = {
 	connectionString: DATABASE_URL,
 };
-if (process.env.NODE_ENV == "production") {
-	config.ssl = {
-		rejectUnauthorized: false,
-	};
-}
+// if (process.env.NODE_ENV == "production") {
+// 	config.ssl = {
+// 		rejectUnauthorized: false,
+// 	};
+// }
 
 const db = pgp(config);
 
@@ -43,15 +40,20 @@ router.post("/register", async (req, res) => {
 //Login
 router.post("/login", async (req, res) => {
 	try {
-		const { password, email } = req.body;
-		const user = await db.oneOrNone(`select * from users where email = $1`, [email]);
+		const { password, emailAddr} = req.body;
+		const user = await db.oneOrNone(`select * from users where email = $1`, [
+			emailAddr
+		]);
 
-		// if (!user) return res.status(400).send("Email does not exist.");
+		if (!user) 
+			res.json({ message: "Email does not exist" });
+		// return res.status(400).send("Email does not exist.");
 
 		const dbPassword = await user.password;
 		const validPassword = await bcrypt.compare(password, dbPassword);
 		if (!validPassword)
-			return res.status(400).send("Invalid username or password.");
+			res.json({message: "Invalid username or password"})
+			// return res.status(400).send("Invalid username or password.");
 	} catch (e) {
 		console.log(e);
 		res.json({
