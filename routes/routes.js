@@ -44,15 +44,18 @@ router.post("/login", async (req, res) => {
 		const user = await db.oneOrNone(`select * from users where email=$1`, [
 			email,
 		]);
-		console.log(user);
-		if (!user) return res.status(400).send("User does not exist");
+		// console.log(user);
 
 		const dbPassword = user.password;
 		const validPass = await bcrypt.compare(password, dbPassword);
-
-		if (!validPass) {
+		if (!user) {
+			return res.status(400).send("User does not exist");
+		}else if (!validPass) {
 			return res.status(400).send("Invalid email or password");
+		}else{
+			return res.status(200).send("Login success");
 		}
+		
 	} catch (error) {
 		res.json(error);
 	}
