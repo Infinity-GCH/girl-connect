@@ -24,7 +24,7 @@ router.post("/register", async (req, res) => {
     try {
         const {full_name, email, password} = req.body;
         bcrypt.hash(password, 10).then(async function (hash){
-            let userDetails = `insert into users (f_name, e_mail, p_word) values ($1,$2,$3)`;
+            let userDetails = `insert into users (full_name, email, password) values ($1,$2,$3)`;
             await db.none(userDetails, [full_name, email, hash]);
         });
         res.json({
@@ -37,4 +37,17 @@ router.post("/register", async (req, res) => {
             error: e.message,
         })
     }
+})
+
+//Login 
+router.post("/login", async (req, res) => {
+    const {password, email} = req.body;
+    const user = await db.oneOrNone(`select * from users where email = $1`, [email,]);
+    
+    if (!user) return res.status(400).send("Email does not exist.");
+    
+    const dbPassword = user.password;
+    const validPassword = await bcrypt.compare(password, dbPassword);
+    if ( !validPassword ) return res.status(400).send("Invalid username or password.");
+
 })
