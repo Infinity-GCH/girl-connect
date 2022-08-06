@@ -42,17 +42,24 @@ router.post("/register", async (req, res) => {
 
 //Login
 router.post("/login", async (req, res) => {
-	const { password, email } = req.body;
-	const user = await db.oneOrNone(`select * from users where email = $1`, [
-		email,
-	]);
+	try {
+		const { password, email } = req.body;
+		const user = await db.oneOrNone(`select * from users where email = $1`, [
+			email]);
 
-	if (!user) return res.status(400).send("Email does not exist.");
+		if (!user) return res.status(400).send("Email does not exist.");
 
-	const dbPassword = user.password;
-	const validPassword = await bcrypt.compare(password, dbPassword);
-	if (!validPassword)
-		return res.status(400).send("Invalid username or password.");
+		const dbPassword = user.password;
+		const validPassword = await bcrypt.compare(password, dbPassword);
+		if (!validPassword)
+			return res.status(400).send("Invalid username or password.");
+	} catch (e) {
+		console.log(e);
+		res.json({
+			status: "error",
+			error: e.message
+		});
+	}
 });
 
 module.exports = router;
