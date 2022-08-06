@@ -47,9 +47,9 @@ router.post("/login", async (req, res) => {
 		const user = await db.oneOrNone(`select * from users where email = $1`, [
 			email]);
 
-		if (!user) return res.status(400).send("Email does not exist.");
+		// if (!user) return res.status(400).send("Email does not exist.");
 
-		const dbPassword = user.password;
+		const dbPassword = await user.password;
 		const validPassword = await bcrypt.compare(password, dbPassword);
 		if (!validPassword)
 			return res.status(400).send("Invalid username or password.");
