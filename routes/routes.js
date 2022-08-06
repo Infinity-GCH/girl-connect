@@ -44,8 +44,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
 	try {
 		const { password, email } = req.body;
-		const user = await db.oneOrNone(`select * from users where email = $1`, [
-			email]);
+		const user = await db.oneOrNone(`select * from users where email = $1`, [email]);
 
 		// if (!user) return res.status(400).send("Email does not exist.");
 
