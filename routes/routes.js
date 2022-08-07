@@ -20,10 +20,10 @@ const db = pgp(config);
 // Registration
 router.post("/register", async (req, res) => {
 	try {
-		const { full_name, email, password } = req.body;
+		const { full_name, email, password, contact } = req.body;
 		bcrypt.hash(password, 10).then(async function (hash) {
-			let userDetails = `insert into users (full_name, email, password) values ($1,$2,$3)`;
-			await db.none(userDetails, [full_name, email, hash]);
+			let userDetails = `insert into users (full_name, email, password, contact) values ($1,$2,$3,$4)`;
+			await db.none(userDetails, [full_name, email, hash, contact]);
 			res.json({
 				status: "success",
 			});
@@ -62,9 +62,13 @@ router.post("/login", async (req, res) => {
 // Create Request
 router.post("/request", async (req, res) => {
 	try {
-		const { type, description } = req.body;
-		let userRequest = `insert into requests (type, description, status) values ($1,$2,$3)`;
-		await db.none(userRequest, [type, description, "open"]);
+		const { type, description, email } = req.body;
+		let userRef = await db.one("select user_id from users where email = $1", [
+			email,
+		]);
+
+		let userId = userRef.user_id;
+		await db.none(`insert into requests (type, description, status, user_id) values ($1,$2,$3, $4)`, [type, description, "open", userId]);
 		res.json({
 			status: "success",
 		});
@@ -80,7 +84,8 @@ router.post("/request", async (req, res) => {
 // Feeds
 router.get("/feeds", async (req, res) => {
 	try {
-		const feed = await db.oneOrNone(`select * from requests`);
+		const { open } = req.body;
+		const feed = await db.many(`select * from requests`);
 		res.json({ data: feed });
 	} catch (e) {
 		console.log(e);
