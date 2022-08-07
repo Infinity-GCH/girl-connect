@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
 router.post("/request", async (req, res) => {
 	try {
 		const { type, description, email } = req.body;
-		let userRef = await db.one("select user_id from users where email = $1", [
+		let userRef = await db.oneOrNone("select user_id from users where email = $1", [
 			email,
 		]);
 
@@ -94,5 +94,19 @@ router.get("/feeds", async (req, res) => {
 		});
 	}
 });
+
+router.post("filter", async(req, res)=>{
+	try {
+		const {value} = req.body;
+		const feed = await db.many(`select * from requests`);
+		res.json({ data: feed });
+	} catch (e) {
+		console.log(e);
+		res.json({
+			status: "error",
+			error: e.message,
+		});
+	}
+})
 
 module.exports = router;
