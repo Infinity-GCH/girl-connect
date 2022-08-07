@@ -84,7 +84,6 @@ router.post("/request", async (req, res) => {
 // Feeds
 router.get("/feeds", async (req, res) => {
 	try {
-		const { open } = req.body;
 		const feed = await db.many(`select * from requests`);
 		res.json({ data: feed });
 	} catch (e) {
