@@ -41,9 +41,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
 	try {
 		const { password, email } = req.body;
-		const user = await db.oneOrNone(`select * from users where email=$1`, [
-			email,
-		]);
+		const user = await db.oneOrNone(`select * from users where email=$1`, [email]);
 		console.log(user);
 		const dbPassword = user.password;
 		const validPass = await bcrypt.compare(password, dbPassword);
@@ -63,9 +61,9 @@ router.post("/login", async (req, res) => {
 router.post("/request", async (req, res) => {
 	try {
 		const { type, description, email } = req.body;
+
 		let userRef = await db.oneOrNone("select user_id from users where email = $1", [
-			email,
-		]);
+			email]);
 
 		let userId = userRef.user_id;
 		await db.none(`insert into requests (type, description, status, user_id) values ($1,$2,$3, $4)`, [type, description, "open", userId]);
@@ -84,7 +82,7 @@ router.post("/request", async (req, res) => {
 // Feeds
 router.get("/feeds", async (req, res) => {
 	try {
-		const feed = await db.many(`select * from requests`);
+		const feed = await db.any(`select * from users inner join requests on users.user_id = requests.user_id`);
 		res.json({ data: feed });
 	} catch (e) {
 		console.log(e);
