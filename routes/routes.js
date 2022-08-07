@@ -80,7 +80,7 @@ router.post("/request", async (req, res) => {
 // Feeds
 router.get("/feeds", async (req, res) => {
 	try {
-		const feed = await db.any(`select * from requests`);
+		const feed = await db.any(`select * from users inner join requests on users.user_id = requests.user_id`);
 		res.json({ data: feed });
 	} catch (e) {
 		console.log(e);
