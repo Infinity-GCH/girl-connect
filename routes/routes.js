@@ -80,7 +80,7 @@ router.post("/request", async (req, res) => {
 // Feeds
 router.get("/feeds", async (req, res) => {
 	try {
-		const feed = await db.oneOrNone(`select * from requests`);
+		const feed = await db.many(`select * from requests`);
 		res.json({ data: feed });
 	} catch (e) {
 		console.log(e);
